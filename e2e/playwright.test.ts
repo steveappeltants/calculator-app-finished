@@ -21,7 +21,9 @@ test.describe('Calculator app tests', () => {
 
     const result = await page.$eval('#result', (element: Element | null) => {
         return element ? element.textContent : null;
-  });
 
-  expect(result).toBe('The result is: 2');
+        expect(result).toBe('The result is: 2');
+
+  })
+
 });

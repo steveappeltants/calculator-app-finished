@@ -1,0 +1,93 @@
+    pipeline {
+        agent any
+        
+        tools {
+            nodejs "testenvnode"
+        }
+    
+        stages {
+            stage('cleanup') {
+                steps {
+                    sh 'rm -rf calculator'
+                }
+            }
+            stage('fetch app code') {
+                steps {
+                    sh 'mkdir calculator'
+                    dir('calculator'){
+                        git branch: 'main', url: 'git@github.com:steveappeltants/calculator-app-finished.git'
+                    }
+                }
+            }
+            stage('install dependencies tests') {
+                steps {
+                    dir("calculator") { 
+                        sh 'npm install'
+                        // sh 'npm i playwright-chromium'
+                    }
+                }
+            }
+            
+            stage('install dependencies e2e'){
+                steps {
+                    dir("calculator"){
+                        sh 'npm init playwright@latest'
+                         sh' npm install --save-dev playwright'
+                        // // Installs TypeScript
+                        sh 'npm install typescript --save-dev'
+                        // // Installs Playwright operatingsystem dependancies
+                        // sh 'npx playwright install-deps'
+                    }
+                }
+            }
+            stage('run e2e test'){
+                steps {
+                    dir('calculator'){
+		                sh 'npm uninstall playwright playwright-chromium'
+                        sh 'npm install -D @playwright/test'
+                        sh 'npm update @playwright/test @types/playwright'
+                        // juste commando toevoegen
+                        // sh 'npx playwright test'
+                        // sh 'ls -R'
+		            }
+                }
+            }
+
+            stage('create and update TypeScript file') {
+            steps {
+                dir('calculator') {
+                    script {
+                        def filePath = "${WORKSPACE}/testdocument.ts"
+
+                        if (fileExists(filePath)) {
+                            echo "Updating existing file: ${filePath}"
+
+                            writeFile file: filePath, text: '\n// Updated content'
+
+                            echo 'File updated successfully.'
+                        } else {
+                            echo "Creating new file: ${filePath}"
+
+                            def initialContent = 'console.log("File created successfully");\n'
+                            writeFile file: filePath, text: initialContent
+
+                            echo 'File created successfully.'
+                        }
+                    }
+                }
+            }
+        }
+            stage('run Postman tests'){
+                steps{
+                    script{
+                        sh 'npm install -g typescript'
+                        sh 'npm install -g ts-node@latest'
+                        // Newman wordt global tool geïnstalleerd
+                        // sh 'npm install -g newman'
+                        sh 'npm install --save-dev @types/node'
+                        sh 'npx ts-node ./testdocument.ts'
+                    }
+                }
+            }
+        }
+    }

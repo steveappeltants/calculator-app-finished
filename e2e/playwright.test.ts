@@ -14,7 +14,7 @@ test.describe('Calculator app tests', () => {
         const subtractButton = await page.locator('[role="button"][name="subtract"]');
 
         await page.fill('#number1', '3');
-        await page.fill('#number2', '1'); // Change the second number for subtraction
+        await page.fill('#number2', '1');
 
         await subtractButton.click();
 

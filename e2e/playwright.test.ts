@@ -8,22 +8,21 @@ test.describe('Calculator app tests', () => {
     test('App has a button', async ({ page }) => {
         const addButton = await page.waitForSelector('#add');
         expect(addButton).toBeTruthy();
-});
+    });
 
-    test('App can cubstract', async ({ page }) => {
+    test('App can subtract', async ({ page }) => {
         const subtractButton = await page.locator('[role="button"][name="subtract"]');
 
         await page.fill('#number1', '3');
-        await page.fill('#number2', '7');
+        await page.fill('#number2', '1'); // Change the second number for subtraction
 
         await subtractButton.click();
-        await page.waitForSelector('#result:has-text("-4")');
 
-    const result = await page.$eval('#result', (element: Element | null) => {
-        return element ? element.textContent : null;
+        const result = await page.$eval('#result', (element: Element | null) => {
+            return element ? element.textContent : null;
+        });
 
+        // Use expect to assert the result
         expect(result).toBe('The result is: 2');
-
-  })
-
+    });
 });
